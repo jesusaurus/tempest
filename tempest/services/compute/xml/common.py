@@ -103,6 +103,8 @@ def xml_to_json(node):
         if not attr.startswith("xmlns"):
             json[attr] = node.get(attr)
     if not node.getchildren():
+        if node.text is not None:
+            node.text = node.text.strip()
         return node.text or json
     for child in node.getchildren():
         tag = child.tag

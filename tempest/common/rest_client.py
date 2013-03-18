@@ -332,7 +332,15 @@ class RestClient(object):
         if ctype in JSON_ENC or ctype in XML_ENC:
             parse_resp = True
         elif ctype in TXT_ENC:
-            parse_resp = False
+            # NOTE(jesusaurus): For some reason hpcloud http 413 xml response
+            # has a content-type of text/html, so as a dirty hack let's check
+            # string object for an occurence of xmlns to know if we should
+            # parse the body.
+            xmlns = 'xmlns="http://docs.openstack.org/compute/api/v1.1"'
+            if xmlns in resp_body:
+                parse_resp = True
+            else:
+                parse_resp = False
         else:
             raise exceptions.RestClientException(str(resp.status))
 
